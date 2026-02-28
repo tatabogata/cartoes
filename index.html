@@ -103,7 +103,11 @@
       font-weight: 700;
       white-space: nowrap;
     }
-    .header h1 em { font-weight: 400; opacity: 0.55; font-style: normal; font-size: 12px; }
+    .header h1 em { font-weight: 400; color: white; font-style: normal; font-size: 12px; }
+    @media (max-width: 520px) {
+      .header h1 em { display: none; }
+      .header h1 { white-space: normal; }
+    }
     .header-brand {
       font-size: 11px;
       opacity: 0.5;
