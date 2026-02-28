@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cartões Português</title>
+  <meta name="robots" content="noindex, nofollow">
+  <style>
+    /* ── PASSWORD GATE ── */
+    #gate {
+      position: fixed; inset: 0;
+      background: #1E3A5F;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    #gate.hidden { display: none; }
+    .gate-box {
+      background: white;
+      border-radius: 20px;
+      padding: 36px 32px;
+      max-width: 340px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .gate-box h2 { font-size: 22px; color: #1E3A5F; margin-bottom: 6px; }
+    .gate-box p  { font-size: 14px; color: #888; margin-bottom: 22px; }
+    .gate-input {
+      width: 100%; padding: 13px 16px;
+      border: 2px solid #e0e0e0; border-radius: 12px;
+      font-size: 16px; text-align: center;
+      outline: none; transition: border-color 0.15s;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+    .gate-input:focus { border-color: #1E3A5F; }
+    .gate-input.error { border-color: #E84855; animation: shake 0.3s; }
+    .gate-btn {
+      width: 100%; padding: 13px;
+      background: #1E3A5F; color: white;
+      border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .gate-btn:hover { background: #2B58B5; }
+    .gate-error { font-size: 13px; color: #E84855; margin-top: 10px; min-height: 18px; }
+    @keyframes shake {
+      0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+    }
+  </style>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f2f3ee;
+      --card-bg: #fff;
+      --text: #1a1a1a;
+      --text-muted: #999;
+      --radius: 14px;
+      --shadow: 0 2px 10px rgba(0,0,0,0.07);
+      --shadow-hover: 0 5px 20px rgba(0,0,0,0.13);
+      --header-bg: #1E3A5F;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--header-bg);
+      color: white;
+      padding: 12px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .header-bottom {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .header h1 em { font-weight: 400; opacity: 0.55; font-style: normal; font-size: 12px; }
+
+    /* ── DROPDOWN ── */
+    .select-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+    }
+    .select-trigger {
+      width: 100%;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.25);
+      color: white;
+      padding: 8px 38px 8px 14px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .select-trigger:hover { background: rgba(255,255,255,0.2); }
+    .select-trigger .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: white;
+    }
+    .select-trigger .arrow {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      opacity: 0.7;
+    }
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+      overflow: hidden;
+      z-index: 200;
+    }
+    .dropdown.open { display: block; }
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #1a1a1a;
+      transition: background 0.1s;
+    }
+    .dropdown-item:hover { background: #f5f5f5; }
+    .dropdown-item.active { font-weight: 600; }
+    .dropdown-item .dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dropdown-item .count {
+      margin-left: auto;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    /* ── PLAY ALL BTN ── */
+    .play-all-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: white;
+      padding: 7px 14px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .play-all-btn:hover { background: rgba(255,255,255,0.25); }
+    .play-all-btn.stop { background: rgba(220,80,80,0.5); border-color: rgba(220,80,80,0.6); }
+
+    /* ── AUTOPLAY BAR ── */
+    .autoplay-bar {
+      background: #1E3A5F;
+      color: white;
+      padding: 8px 20px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .autoplay-bar.visible { display: flex; }
+    .ap-track { flex: 1; max-width: 180px; height: 3px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; }
+    .ap-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+    .ap-label { font-weight: 600; opacity: 0.85; }
+    .stop-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 12px; border-radius: 50px; font-size: 12px; cursor: pointer; }
+
+    /* ── GRID ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 11px;
+    }
+    @media (min-width: 580px)  { .grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 860px)  { .grid { grid-template-columns: repeat(4, 1fr); gap: 14px; } }
+    @media (min-width: 1060px) { .grid { grid-template-columns: repeat(5, 1fr); } }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 13px 13px 10px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: box-shadow 0.15s, transform 0.15s;
+      border-left: 4px solid #ddd;
+      position: relative;
+      scroll-margin-top: 150px;
+    }
+    .card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+    .card.playing {
+      box-shadow: 0 0 0 2px var(--cat-color), var(--shadow-hover);
+      transform: translateY(-2px);
+    }
+    .card-top { display: flex; align-items: center; justify-content: space-between; }
+    .card-num { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+    .cat-icon { font-size: 16px; line-height: 1; }
+    .card-pt {
+      font-size: 13.5px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--text);
+      flex: 1;
+    }
+    .card-ru {
+      font-size: 12.5px;
+      color: #555;
+      line-height: 1.35;
+      padding-top: 7px;
+      border-top: 1px solid #f0f0f0;
+      display: none;
+      font-style: italic;
+    }
+    .card-ru.visible { display: block; }
+    .card-actions { display: flex; gap: 7px; align-items: center; }
+    .btn-play {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      border: none;
+      color: white;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: opacity 0.15s, transform 0.1s;
+      background: var(--cat-color, #555);
+    }
+    .btn-play:hover { opacity: 0.85; }
+    .btn-play:active { transform: scale(0.9); }
+    .btn-flip {
+      flex: 1;
+      border: 1.5px solid #e8e8e8;
+      background: white;
+      color: var(--text-muted);
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 6px 8px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .btn-flip:hover, .btn-flip.active {
+      border-color: var(--cat-color, #555);
+      color: var(--cat-color, #555);
+      background: var(--cat-light, #f5f5f5);
+    }
+
+    .playing-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: white;
+      animation: pulse 0.9s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.4; transform:scale(0.6); }
+    }
+
+    /* overlay to close dropdown — must be below header z-index:100 */
+    .overlay { display:none; position:fixed; inset:0; z-index:50; }
+    .overlay.open { display:block; }
+  </style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <h2>🎴 Cartões Português</h2>
+    <p>Введите пароль для доступа к карточкам</p>
+    <input class="gate-input" id="pwInput" type="password" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter') checkPassword()">
+    <button class="gate-btn" onclick="checkPassword()">Войти</button>
+    <div class="gate-error" id="gateError"></div>
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <h1>Cartões Português <em>· 200 фраз</em></h1>
+      <button class="play-all-btn" id="playAllBtn" onclick="togglePlayAll()">
+        <span id="playAllIcon">▶</span>
+        <span id="playAllText">Слушать все</span>
+      </button>
+    </div>
+    <div class="header-bottom">
+      <div class="select-wrap">
+        <div class="select-trigger" id="selectTrigger" onclick="toggleDropdown()">
+          <span class="dot" id="triggerDot" style="background:white"></span>
+          <span id="triggerLabel">Все категории</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="dropdown" id="dropdown"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="autoplay-bar" id="autoplayBar">
+  <span class="ap-label" id="apLabel">1 / 46</span>
+  <div class="ap-track"><div class="ap-fill" id="apFill" style="width:0%"></div></div>
+  <button class="stop-btn" onclick="stopPlayAll()">✕ Стоп</button>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeDropdown()"></div>
+
+<div class="container">
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const CARDS = [{"id":1,"pt":"Quer comer aqui ou é para levar? - É para levar","audio":"https://static.wixstatic.com/mp3/18fb24_5a7031e56e3c4e50bdeb1d397ce0aa92.mp3","category":"в кафе","ru":"вы хотите кушать здесь или взять с собой?"},{"id":2,"pt":"Podemos sentar-nos aqui?","audio":"https://static.wixstatic.com/mp3/18fb24_eb151eb660d849cbaf20a584599b7a0a.mp3","category":"в кафе","ru":"мы можем сесть здесь?"},{"id":3,"pt":"- Tem uma reserva? - Não tenho.","audio":"https://static.wixstatic.com/mp3/18fb24_9318b6cb9dec45b38ba0f927ba428ce7.mp3","category":"в кафе","ru":"у вас есть бронь? Нет"},{"id":4,"pt":"Tenho uma reserva em nome de Anna","audio":"https://static.wixstatic.com/mp3/18fb24_572cc36583c24b269f0ac1245ee4b9b1.mp3","category":"в кафе","ru":"У меня есть бронь на имя Анны."},{"id":5,"pt":"É preciso reservar uma mesa com antecedência?","audio":"https://static.wixstatic.com/mp3/18fb24_b15a0a47a4314150af196fe4b966b07e.mp3","category":"в кафе","ru":"Нужно ли бронировать столик заранее?"},{"id":6,"pt":"Tem mesa para três pessoas para hoje às 19h00 (sete horas da tarde)?","audio":"https://static.wixstatic.com/mp3/18fb24_f1eb4e94ca5a436695a9936571800d84.mp3","category":"в кафе","ru":"у вас есть столик на 3 человек на сегодня в 19?"},{"id":7,"pt":"Posso sentar-me cá dentro/lá fora?","audio":"https://static.wixstatic.com/mp3/18fb24_6a9cadc62d9845fda2edebf3f03fc41a.mp3","category":"в кафе","ru":"Могу ли я сесть здесь внутри / там снаружи?"},{"id":8,"pt":"Este estabelecimento é pet friendly?","audio":"https://static.wixstatic.com/mp3/18fb24_8ae66a70edb64cd7b5841fd161e4f74c.mp3","category":"в кафе","ru":"В этом заведении можно с домашним животным?"},{"id":9,"pt":"Posso tirar esta cadeira?","audio":"https://static.wixstatic.com/mp3/18fb24_3f2da350a8a64042b38a079483bdd9a6.mp3","category":"в кафе","ru":"могу я взять этот стул?"},{"id":10,"pt":"Tem cadeira para bebé?","audio":"https://static.wixstatic.com/mp3/18fb24_31ac6844f3874a01a2d274b839d6f893.mp3","category":"в кафе","ru":"Есть ли у вас стул / кресло для ребенка?"},{"id":11,"pt":"A que horas abre?","audio":"https://static.wixstatic.com/mp3/18fb24_26e172cb3609498a8f6d120dbb3e5d90.mp3","category":"в кафе","ru":"Во сколько вы открываетесь?"},{"id":12,"pt":"Fecha a que horas?","audio":"https://static.wixstatic.com/mp3/18fb24_7b84fd9e9a7b456a8af1a214d43a1127.mp3","category":"в кафе","ru":"Во сколько вы закрываетесь?"},{"id":13,"pt":"O que vai beber? / E para beber?","audio":"https://static.wixstatic.com/mp3/18fb24_29960023569c423d88ef1c4f94e87fcd.mp3","category":"в кафе","ru":"что будете пить?"},{"id":14,"pt":"Precisamos de mais tempo para ver a ementa/carta","audio":"https://static.wixstatic.com/mp3/18fb24_f607309cd8b84918a06d9de98f6ab109.mp3","category":"в кафе","ru":"Нам нужно больше времени, чтобы изучить меню."},{"id":15,"pt":"Dê-me mais dois minutos","audio":"https://static.wixstatic.com/mp3/18fb24_4a9a90443b724570be1c1db620454c28.mp3","category":"в кафе","ru":"Дайте мне ещё две минуты"},{"id":16,"pt":"Gostava de fazer um pedido","audio":"https://static.wixstatic.com/mp3/18fb24_40f12f28f16e46fb85c92ade185ea283.mp3","category":"в кафе","ru":"Я бы хотел(а) сделать заказ"},{"id":17,"pt":"Tem pratos vegetarianos?","audio":"https://static.wixstatic.com/mp3/18fb24_5b5c9df1f8c147a9919eadbdff95cb01.mp3","category":"в кафе","ru":"У вас есть вегетарианские блюда?"},{"id":18,"pt":"Sou alégico(a) a...","audio":"https://static.wixstatic.com/mp3/18fb24_78e2e93a608a4a668800733252856677.mp3","category":"в кафе","ru":"у мена аллергия на..."},{"id":19,"pt":"Este prato tem leite / frutos secos / ovos / carne / soja / trigo?","audio":"https://static.wixstatic.com/mp3/18fb24_602de9939c96482396e744016682096d.mp3","category":"в кафе","ru":"Это блюдо содержит молоко / орехи / яйца / мясо / сою / пшеницу?"},{"id":20,"pt":"Pode trazer um copo de água da torneira?","audio":"https://static.wixstatic.com/mp3/18fb24_249f71f857a7489a83e22d4bf5c5ee01.mp3","category":"в кафе","ru":"Можете принести стакан воды из-под крана?"},{"id":21,"pt":"Uma água natural, se faz favor / Uma água com gás sem gelo, se faz favor.","audio":"https://static.wixstatic.com/mp3/18fb24_ce93c0054bee459c849598f01d5c43ca.mp3","category":"в кафе","ru":"Воду комнатной температуры, пожалуйста/  Газированную воду без льда, пожалуйста."},{"id":22,"pt":"Vou pedir um prato de...","audio":"https://static.wixstatic.com/mp3/18fb24_c5b8523cffbc4c8382c92190fce71a15.mp3","category":"в кафе","ru":"мне, пожалуйста, одно блюдо..."},{"id":23,"pt":"Os pontos da carne: Mal Passado / Médio-Mal / Médio / Médio-Bem / Bem Passado","audio":"https://static.wixstatic.com/mp3/18fb24_456c69626423410e8aab24b8ee440dcd.mp3","category":"в кафе","ru":"Степень прожарки мяса: Слабая с кровью / слабая / средняя с кровью / средняя без крови / полная / полная без крови"},{"id":24,"pt":"Quanto tempo vai demorar?","audio":"https://static.wixstatic.com/mp3/18fb24_bedc128f428c4b428988c21440a1d372.mp3","category":"в кафе","ru":"Сколько времени это займёт?"},{"id":25,"pt":"Mais nada / (É) só isso","audio":"https://static.wixstatic.com/mp3/18fb24_6aeabc8466c2490dadfe519a86ccc0af.mp3","category":"в кафе","ru":"больше ничего / только это"},{"id":26,"pt":"Já pedi / Ainda não pedi","audio":"https://static.wixstatic.com/mp3/18fb24_e8b09ece6e8f4ef9941f624250c275ce.mp3","category":"в кафе","ru":"Я уже заказал(а) / я ещё не заказал(а)"},{"id":27,"pt":"Aqui há wifi?","audio":"https://static.wixstatic.com/mp3/18fb24_87265cb9a2ce47e1ab56e0d2fde50b2a.mp3","category":"в кафе","ru":"тут есть Wi-Fi?"},{"id":28,"pt":"Qual é a senha do wifi?","audio":"https://static.wixstatic.com/mp3/18fb24_636e0e8261e040c99d433b1ab1eecc96.mp3","category":"в кафе","ru":"Какой пароль от вайфая?"},{"id":29,"pt":"Podia ligar / desligar o ar condicionado?","audio":"https://static.wixstatic.com/mp3/18fb24_0dddc505ef4449a2a1d1778cb8b3f58d.mp3","category":"в кафе","ru":"не могли бы включить/выключить кондиционер?"},{"id":30,"pt":"Mais um copo, se faz favor","audio":"https://static.wixstatic.com/mp3/18fb24_8c9b818222c2418da0933766f628ba3e.mp3","category":"в кафе","ru":"Еще один бокал пожалуйста"},{"id":31,"pt":"Podia trazer os talheres? Podia trazer um garfo, uma colher, uma faca?","audio":"https://static.wixstatic.com/mp3/18fb24_8e14acbefe05429aacd006038bfb0199.mp3","category":"в кафе","ru":"Принесите пожалуйста, вилку, ложку, нож, салфетку?"},{"id":32,"pt":"Pode trazer-me o sal, se faz favor?","audio":"https://static.wixstatic.com/mp3/18fb24_ee373eb155494785a868e0ffd7efa3ee.mp3","category":"в кафе","ru":"Можете принести мне соль, пожалуйста?"},{"id":33,"pt":"Onde posso arranjar guardanapos?","audio":"https://static.wixstatic.com/mp3/18fb24_824c1cbbb540496a95dce8c9d1b9939b.mp3","category":"в кафе","ru":"Где я могу взять салфетки?"},{"id":34,"pt":"Obrigado(a). Tudo estava delicioso / saboroso / ótimo / muito bom","audio":"https://static.wixstatic.com/mp3/18fb24_679261ea13d440beabbf3236c3884a1a.mp3","category":"в кафе","ru":"Спасибо. Всё было очень вкусно / вкусно / отлично / очень хорошо."},{"id":35,"pt":"Já terminei / Já terminamos","audio":"https://static.wixstatic.com/mp3/18fb24_03f82d7449944a179f84782a0bc147b8.mp3","category":"в кафе","ru":"Я закончил(а) / Мы закончили"},{"id":36,"pt":"Não tenho fome","audio":"https://static.wixstatic.com/mp3/18fb24_9fbe949756384095a493adae3484b42a.mp3","category":"в кафе","ru":"я не голоден/голодна"},{"id":37,"pt":"Obrigado(a), já não consigo comer mais","audio":"https://static.wixstatic.com/mp3/18fb24_9609d564a00c4ef3863715f0c06c0c19.mp3","category":"в кафе","ru":"Спасибо, я уже не могу больше есть."},{"id":38,"pt":"Estou cheio(a) / Estou satisfeito(a)","audio":"https://static.wixstatic.com/mp3/18fb24_c3aaf0011d44454dbb709fdf90c561e5.mp3","category":"в кафе","ru":"я наелся/наелась"},{"id":39,"pt":"Vai querer uma sobremesa?","audio":"https://static.wixstatic.com/mp3/18fb24_8660670de57d4f1f845003d6f7c3f905.mp3","category":"в кафе","ru":"Вы будете десерт?"},{"id":40,"pt":"Posso usar a vossa casa de banho?","audio":"https://static.wixstatic.com/mp3/18fb24_f84004a706be46b98d33333087b0286d.mp3","category":"в кафе","ru":"Я могу воспользоваться уборной вашего заведения?"},{"id":41,"pt":"Queria pagar","audio":"https://static.wixstatic.com/mp3/18fb24_8a39c8b23499487f83dfdeb67efa3ab3.mp3","category":"в кафе","ru":"я хотел(а) бы заплатить"},{"id":42,"pt":"Vamos dividir a conta / pagamos em separado","audio":"https://static.wixstatic.com/mp3/18fb24_a305c889e64d4f498e9665fec41c1a79.mp3","category":"в кафе","ru":"Давайте разделим счет / Мы заплатим отдельно"},{"id":43,"pt":"Traga a conta, se faz favor / Pode trazer a conta?","audio":"https://static.wixstatic.com/mp3/18fb24_937adffa402c41db9479671cc7974742.mp3","category":"в кафе","ru":"Принесите счет, пожалуйста / можете принести счёт?"},{"id":44,"pt":"Posso pagar com cartão / com multibanco?","audio":"https://static.wixstatic.com/mp3/18fb24_8165133d302c4d609aba9a37ab205c58.mp3","category":"в кафе","ru":"могу я оплатить картой?"},{"id":45,"pt":"Pode adicionar gorjeta à conta?","audio":"https://static.wixstatic.com/mp3/18fb24_34baf939ae6249cd8027ae343f9c1b9d.mp3","category":"в кафе","ru":"можете добавить чаевые в счёт?"},{"id":46,"pt":"Não preciso do troco / Pode ficar com o troco","audio":"https://static.wixstatic.com/mp3/18fb24_f9aa7bd8fb46467aa87d469143b3bcdb.mp3","category":"в кафе","ru":"Сдачи не надо / Вы можете оставить сдачу себе"},{"id":47,"pt":"Quanto custa? Quanto é?","audio":"https://static.wixstatic.com/mp3/18fb24_fba8e0c11702450ebd1e13f7bb446c7a.mp3","category":"в магазине","ru":"Сколько стоит?"},{"id":48,"pt":"Qual é o preço de um quilo?","audio":"https://static.wixstatic.com/mp3/18fb24_42d5580ef6024056ac0bd7375bdc2416.mp3","category":"в магазине","ru":"Какая цена за килограмм?"},{"id":49,"pt":"Posso provar? (comida) / Posso experimentar? (outro)","audio":"https://static.wixstatic.com/mp3/18fb24_296b00a9b93c456b8b198686197a9ca5.mp3","category":"в магазине","ru":"Могу я попробовать (1 - еда / 2 - другое)?"},{"id":50,"pt":"Pode limpar / arranjar o peixe, se faz favor?","audio":"https://static.wixstatic.com/mp3/18fb24_c966b07852b84b2fb1a4165963417d41.mp3","category":"в магазине","ru":"Почистите рыбу, пожалуйста"},{"id":51,"pt":"Trezentos gramas de camarão, por favor","audio":"https://static.wixstatic.com/mp3/18fb24_16e1a51bad494ae3aa4a504a12e406f9.mp3","category":"в магазине","ru":"Триста граммов креветок, пожалуйста."},{"id":52,"pt":"Um frango grande com miúdos / sem miúdos","audio":"https://static.wixstatic.com/mp3/18fb24_c729e55d789e42f282d963609b8c8198.mp3","category":"в магазине","ru":"Мне одну большую курицу с потрошками / без потрошков"},{"id":53,"pt":"Está bom, obrigado(a)","audio":"https://static.wixstatic.com/mp3/18fb24_f53054581a43493b89b1f43b4023780a.mp3","category":"в магазине","ru":"Хвататит, достаточно"},{"id":54,"pt":"Pode cortar em pedaços grandes?","audio":"https://static.wixstatic.com/mp3/18fb24_e3860defc757467aa21b268f59a57737.mp3","category":"в магазине","ru":"Можете порезать крупными кускочками?"},{"id":55,"pt":"Onde posso pesar isto?","audio":"https://static.wixstatic.com/mp3/18fb24_c52a0cb1f7094e5bb575c1a053191421.mp3","category":"в магазине","ru":"Где можно это взвесить?"},{"id":56,"pt":"Vou dar uma vista de olhos","audio":"https://static.wixstatic.com/mp3/18fb24_4a947b4180864bb2a2cda12e01595f67.mp3","category":"в магазине","ru":"Я просто посмотрю"},{"id":57,"pt":"Tem noutra cor?","audio":"https://static.wixstatic.com/mp3/18fb24_974aa3a02e31435c8c0367a0f2583e5f.mp3","category":"в магазине","ru":"Есть ли в другом цвете?"},{"id":58,"pt":"Tem isto no tamanho M (médio)?","audio":"https://static.wixstatic.com/mp3/18fb24_3379d0fcd3f74df2a5a9c48aa8391b46.mp3","category":"в магазине","ru":"Ести ли это в размере M?"},{"id":59,"pt":"Tem o meu tamanho?","audio":"https://static.wixstatic.com/mp3/18fb24_475eaeff05284d7fbd9df63a1274f01b.mp3","category":"в магазине","ru":"У вас есть моего размера?"},{"id":60,"pt":"Onde ficam os provadores?","audio":"https://static.wixstatic.com/mp3/18fb24_3da22c03f58b4e248ca53e5e1e609986.mp3","category":"в магазине","ru":"Где находятся примерочные?"},{"id":61,"pt":"É preciso tirar senha?","audio":"https://static.wixstatic.com/mp3/18fb24_80bbc41fc4b74a509214dcc8d3554b57.mp3","category":"в магазине","ru":"Нужно брать талончик?"},{"id":62,"pt":"Qual é o número da sua senha?","audio":"https://static.wixstatic.com/mp3/18fb24_1155160164c4499991b4380d62a3993a.mp3","category":"в магазине","ru":"Какой у вас номер талончика?"},{"id":63,"pt":"Quer água fresca ou natural?","audio":"https://static.wixstatic.com/mp3/18fb24_61a017301e6647099e55a1f7fb49a67c.mp3","category":"в магазине","ru":"Вы хотите воду прохладную или комнотной температуры?"},{"id":64,"pt":"Quero fazer um cartão de fidelidade","audio":"https://static.wixstatic.com/mp3/18fb24_3a8d52f1daa647fbafab89ba990c2c62.mp3","category":"в магазине","ru":"Я хочу сделать карту постоянного клиента"},{"id":65,"pt":"É para oferta?","audio":"https://static.wixstatic.com/mp3/18fb24_616d330dd0df43869bcb448225f31407.mp3","category":"в магазине","ru":"это на подарок?"},{"id":66,"pt":"- Precisa de saco? - Sim, dê-me um saco, se faz favor","audio":"https://static.wixstatic.com/mp3/18fb24_f2c4095a191c4bfe983e02997bf9c230.mp3","category":"в магазине","ru":"- Вам нужен пакет? Да, дайте мне один пакет, пожалуйста"},{"id":67,"pt":"Pode ser com número de contribuinte?","audio":"https://static.wixstatic.com/mp3/18fb24_b0ca839d86c148abbe588cfce44fd922.mp3","category":"в магазине","ru":"можно указать налоговый номер?"},{"id":68,"pt":"(Não) estou na fila","audio":"https://static.wixstatic.com/mp3/18fb24_018bdb6683fa478e81a438dac9c5ea09.mp3","category":"в магазине","ru":"Я (не) в очереди"},{"id":69,"pt":"Desculpe, está na fila?","audio":"https://static.wixstatic.com/mp3/18fb24_5bd41a6a05874258a53fc139b09ef8ab.mp3","category":"в магазине","ru":"Извините, вы стоите в очереди?"},{"id":70,"pt":"Pode trocar os cinquenta (50) euros com notas de dez (10)? Pode trocar cinco (5) euros com moedas?","audio":"https://static.wixstatic.com/mp3/18fb24_1268a624b95d4e49b1f3eab0941a4aaa.mp3","category":"в магазине","ru":"Можете разменять 50 евро 10-ками? / Можете разменять 5 евро монетками?"},{"id":71,"pt":"Vai ter troco de vinte 20/ trinta 30/ cinquenta 50 euros?","audio":"https://static.wixstatic.com/mp3/18fb24_3371dfab3261415f92efa47ce91bddae.mp3","category":"в магазине","ru":"Будет ли у Вас сдача с 20/30/50 евро?"},{"id":72,"pt":"Desculpe, mas a etiqueta tinha um preço diferente","audio":"https://static.wixstatic.com/mp3/18fb24_bd4cd6090bba495187b4d9e5646565d0.mp3","category":"в магазине","ru":"Извините, на ценнике была другая цена"},{"id":73,"pt":"Onde é a saída?","audio":"https://static.wixstatic.com/mp3/18fb24_5b8bb183be8143789a0cb4153422a200.mp3","category":"в магазине","ru":"где находится выход?"},{"id":74,"pt":"A que horas vão entregar? Quando chega a encomenda?","audio":"https://static.wixstatic.com/mp3/18fb24_08fa7264f849493fa407e9fa9f46db8c.mp3","category":"в магазине","ru":"Во сколько вы доставите? Когда приедет посылка?"},{"id":75,"pt":"Faz entregas (ao domicílio)?","audio":"https://static.wixstatic.com/mp3/18fb24_749deff8f9e54476a41e18838c698b0e.mp3","category":"в магазине","ru":"У вас есть доставка (на дом)?"},{"id":76,"pt":"Pode enviar um e-mail / uma mensagem com esta informação?","audio":"https://static.wixstatic.com/mp3/18fb24_4dc5ba5817564e70b8a474a02c49364f.mp3","category":"документы","ru":"Можете отправить имейл / сообщение с этой информацией?"},{"id":77,"pt":"Pode fazer-me uma cópia deste documento?","audio":"https://static.wixstatic.com/mp3/18fb24_97ea87be8f504a77af8734fda5e125d9.mp3","category":"документы","ru":"Можете отксеракопировать этот документ?"},{"id":78,"pt":"Preciso de imprimir este ficheiro em preto e branco / a cores","audio":"https://static.wixstatic.com/mp3/18fb24_38fa56e835194f52809c098a92530cc4.mp3","category":"документы","ru":"Мне нужно распечатать этот файл в черно-белом / цветном варианте"},{"id":79,"pt":"- Só uma rúbrica / assinatura. - É aqui?","audio":"https://static.wixstatic.com/mp3/18fb24_0bcbab5198904ecabeaf45ba9913b78f.mp3","category":"документы","ru":"Поставьте подпись. Здесь?"},{"id":80,"pt":"Pode escrever isso?","audio":"https://static.wixstatic.com/mp3/18fb24_bd87262c4bec48d58ab4a7bb186b7ca9.mp3","category":"документы","ru":"можете записать это?"},{"id":81,"pt":"Como se escreve?","audio":"https://static.wixstatic.com/mp3/18fb24_149ea14cd9da45008bb944b5795e0174.mp3","category":"документы","ru":"как это пишется?"},{"id":82,"pt":"Escreva aqui o seu número de telefone / e-mail","audio":"https://static.wixstatic.com/mp3/18fb24_09cf413885584f768ec4e15669754613.mp3","category":"документы","ru":"напишите здесь ваш номер телефона/имейл"},{"id":83,"pt":"Acho que há um erro aqui","audio":"https://static.wixstatic.com/mp3/18fb24_42173e4b83e94a01a36e3a68bb15b35d.mp3","category":"документы","ru":"Мне кажется, здесь ошибка"},{"id":84,"pt":"Temos de chamar a ambulância","audio":"https://static.wixstatic.com/mp3/18fb24_1833c99356c444179b0181de3abdaa84.mp3","category":"медицина","ru":"Нам нужно вызвать скорую."},{"id":85,"pt":"É possível marcar-me para uma data mais próxima?","audio":"https://static.wixstatic.com/mp3/18fb24_f5f0f8c277c94b2dbee69f030e5f2428.mp3","category":"медицина","ru":"Можно ли записать меня на более близкое число?"},{"id":86,"pt":"Preciso de reagendar a minha consulta médica.","audio":"https://static.wixstatic.com/mp3/18fb24_37ab0b57ec22440dacbab811128641a0.mp3","category":"медицина","ru":"Мне нужно перенести приём у врача."},{"id":87,"pt":"Este médico tem um acordo com alguma seguradora?","audio":"https://static.wixstatic.com/mp3/18fb24_674095d00208478f949e28d12beb20f9.mp3","category":"медицина","ru":"Есть ли у этого врача договор с какой-нибудь страховой компанией?"},{"id":88,"pt":"Quero marcar uma consulta para o meu médico de família","audio":"https://static.wixstatic.com/mp3/18fb24_7f140a98c12b4d4eb11ad2a6db71bd4a.mp3","category":"медицина","ru":"Я хочу записаться на прием к своему терапевту"},{"id":89,"pt":"A que horas devo chegar?","audio":"https://static.wixstatic.com/mp3/18fb24_3b7ed50fb9fd45719ce37de8fa8c1805.mp3","category":"медицина","ru":"Во сколько мне прийти?"},{"id":90,"pt":"O médico atende às quintas-feiras","audio":"https://static.wixstatic.com/mp3/18fb24_7cfaae8cc5754f8a9205ce79998c00ee.mp3","category":"медицина","ru":"Врач принимает по четвергам"},{"id":91,"pt":"Tem medicamentos desta lista?","audio":"https://static.wixstatic.com/mp3/18fb24_4c8fec3279df4761addd4bb5bb2bb1ef.mp3","category":"медицина","ru":"Есть ли лекарства из этого списка?"},{"id":92,"pt":"Onde fica...o supermercado/a farmácia?","audio":"https://static.wixstatic.com/mp3/18fb24_29730fba25754bb8a8230ba3d58615f6.mp3","category":"на улице","ru":"Где находится... супермаркет/аптека?"},{"id":93,"pt":"Passe, se faz favor / Força!","audio":"https://static.wixstatic.com/mp3/18fb24_38eb5197335d4c9f8b46713538ccf973.mp3","category":"на улице","ru":"Проходите, пожалуйста / Смелее"},{"id":94,"pt":"Pode passar à frente","audio":"https://static.wixstatic.com/mp3/18fb24_217ae499ac314dce92d485513deae240.mp3","category":"на улице","ru":"Вы можете пройти вперёд"},{"id":95,"pt":"Com licença / desculpe","audio":"https://static.wixstatic.com/mp3/18fb24_c581693c69654860aa81c82147432153.mp3","category":"на улице","ru":"С вашего позволения / извините"},{"id":96,"pt":"Pode tirar uma foto? No horizontal / no vertical","audio":"https://static.wixstatic.com/mp3/18fb24_22a1071faf1b44c6936816fbc198ffc6.mp3","category":"на улице","ru":"Сфотографируете, пожалуйста? Горизонтально / вертикально"},{"id":97,"pt":"Pode ajudar-me? Preciso da sua ajuda","audio":"https://static.wixstatic.com/mp3/18fb24_608f6a6fb4874f1d88a512ee62186868.mp3","category":"на улице","ru":"Можете мне помочь? Мне нужна ваша помощь"},{"id":98,"pt":"Onde posso levantar dinheiro?","audio":"https://static.wixstatic.com/mp3/18fb24_ef9b211dc26949beb87a628b54bcd975.mp3","category":"на улице","ru":"где я могу снять деньги?"},{"id":99,"pt":"O meu nome é Konstantin e sou programador. O meu nome é Ekaterina e sou psicóloga","audio":"https://static.wixstatic.com/mp3/18fb24_ccceb5c37f0b4ffb9ded2a18bba6f75a.mp3","category":"о себе","ru":"Меня зовут Константин, и я программист."},{"id":100,"pt":"Qual é a sua profissão?","audio":"https://static.wixstatic.com/mp3/18fb24_5b49caad34d7412ea2003f277bac9b02.mp3","category":"о себе","ru":"Какая ваша профессия?"},{"id":101,"pt":"Eu sou de...","audio":"https://static.wixstatic.com/mp3/18fb24_af1a2b184d5e4fef87c05f2bc57102c4.mp3","category":"о себе","ru":"Я из ..."},{"id":102,"pt":"O meu número é 987 654 321 0 (nove, oito, sete, seis, cinco, quatro, três, dois um zero)","audio":"https://static.wixstatic.com/mp3/18fb24_1d8ce18bdd73410ebba73ed87aefc040.mp3","category":"о себе","ru":"Мой номер 9876543210"},{"id":103,"pt":"O meu NIF (número de contribuinte) é 123456789","audio":"https://static.wixstatic.com/mp3/18fb24_4faccf603a5b45489c470d5fa4aaf8f8.mp3","category":"о себе","ru":"Мой nif 1234567890"},{"id":104,"pt":"Bom dia! Boa tarde!","audio":"https://static.wixstatic.com/mp3/18fb24_be3c106d7e7042debd51b3aeb3a33e2d.mp3","category":"Приветствие и прощание","ru":"Доброе утро. Добрый день"},{"id":105,"pt":"Até terça!","audio":"https://static.wixstatic.com/mp3/18fb24_9eb7de46397f4aef99fbbae7edc02ab1.mp3","category":"Приветствие и прощание","ru":"До вторника"},{"id":106,"pt":"Bom fim de semana!","audio":"https://static.wixstatic.com/mp3/18fb24_380adaa1fbfe417fb0ebcea7e41173ed.mp3","category":"Приветствие и прощание","ru":"Хороших выходных"},{"id":107,"pt":"Boa sexta!","audio":"https://static.wixstatic.com/mp3/18fb24_07731fa679e34148a525d0752ad8005d.mp3","category":"Приветствие и прощание","ru":"Приятной пятницы"},{"id":108,"pt":"Manda cumprimentos à Alexandra / ao Ricardo!","audio":"https://static.wixstatic.com/mp3/18fb24_eb712e463a964931a073f5c5a02a820e.mp3","category":"Приветствие и прощание","ru":"Передавай привет Александре / Рикардо!"},{"id":109,"pt":"até à próxima! até breve! até amanhã","audio":"https://static.wixstatic.com/mp3/18fb24_3cdb9abf78e64a079bc144b0d4571189.mp3","category":"Приветствие и прощание","ru":"До следующего раза / до скорого! до завтра"},{"id":110,"pt":"Vemo-nos daqui a meia-hora","audio":"https://static.wixstatic.com/mp3/18fb24_dbe3b56654f744ba98e52ed2f88eb45a.mp3","category":"Приветствие и прощание","ru":"Увидимся через полчаса"},{"id":111,"pt":"Boa noite!","audio":"https://static.wixstatic.com/mp3/18fb24_fd49b8364d5c4dfbb81422cfa8031987.mp3","category":"Приветствие и прощание","ru":"Добрый вечер. Спокойной ночи"},{"id":112,"pt":"Desculpe, não posso falar agora","audio":"https://static.wixstatic.com/mp3/18fb24_766438e94c4d4fa5b48399cd79014973.mp3","category":"По телефону","ru":"Извините, я сейчас не могу говорить"},{"id":113,"pt":"Quem é? Quem fala?","audio":"https://static.wixstatic.com/mp3/18fb24_e9527f358abc409c892786b209748778.mp3","category":"По телефону","ru":"Это кто? Кто говорит?"},{"id":114,"pt":"Estou? Está?","audio":"https://static.wixstatic.com/mp3/18fb24_02fba3532aa84196aaec3f587aff0b2b.mp3","category":"По телефону","ru":"Ало. Я слушаю"},{"id":115,"pt":"Não estou interessado(a), desculpe","audio":"https://static.wixstatic.com/mp3/18fb24_69bacfe89ac64668b0c5f872da9ea878.mp3","category":"По телефону","ru":"Я не заинтересован(а), извините"},{"id":116,"pt":"Desculpe, estou muito ocupado(a)","audio":"https://static.wixstatic.com/mp3/18fb24_45f124182c4e4cc8ba794e692b0457ad.mp3","category":"По телефону","ru":"Извините, я сейчас очень занят(а)"},{"id":117,"pt":"Pode soletrar?","audio":"https://static.wixstatic.com/mp3/18fb24_58a7c54f876a4601926cdf1ed2c6fecc.mp3","category":"По телефону","ru":"Я дам вам знать"},{"id":118,"pt":"Desculpe, não tenho tempo para isso","audio":"https://static.wixstatic.com/mp3/18fb24_853e79b739634978b061a7a2db50507c.mp3","category":"По телефону","ru":"Извините, у меня нет на это времени"},{"id":119,"pt":"Podia falar mais devagar?","audio":"https://static.wixstatic.com/mp3/18fb24_d5c474cf2bc6485dbfddfb53f9a6a89a.mp3","category":"По телефону","ru":"не могли бы вы говорить помедленнее?"},{"id":120,"pt":"Mais uma vez, se faz favor","audio":"https://static.wixstatic.com/mp3/18fb24_083a149f81d7420d92454fbaaaf90adc.mp3","category":"По телефону","ru":"Ещё раз, пожалуйста"},{"id":121,"pt":"Pode falar mais baixo / mais alto?","audio":"https://static.wixstatic.com/mp3/18fb24_254e3e982cb24a718438f02d97067ee3.mp3","category":"По телефону","ru":"Можете сказать тише / громче?"},{"id":122,"pt":"Com quem posso falar sobre...","audio":"https://static.wixstatic.com/mp3/18fb24_e7b6fd919d664e08abee814452e38e20.mp3","category":"По телефону","ru":"С кем я могу поговорить насчет …"},{"id":123,"pt":"Parabéns! Feliz Aniversário!","audio":"https://static.wixstatic.com/mp3/18fb24_38c078eefcfd41fc93de43566d1480d0.mp3","category":"общее","ru":"Поздравляю! С днем рождения!"},{"id":124,"pt":"Feliz Natal e Bom Ano Novo!","audio":"https://static.wixstatic.com/mp3/18fb24_f65b3e63c00f4b828902d9605be7e9aa.mp3","category":"общее","ru":"С Рождествои и Новым годом"},{"id":125,"pt":"Não falo inglês","audio":"https://static.wixstatic.com/mp3/18fb24_0c3dbcb3eaf74ac1a15e34a2b657ac3b.mp3","category":"общее","ru":"я не говорю по-английски"},{"id":126,"pt":"Desculpe, ainda estou a aprender português, fala inglês?","audio":"https://static.wixstatic.com/mp3/18fb24_110ce40514334220b24b0a8f79dc6969.mp3","category":"общее","ru":"Извините, я еще только учу португальский, Вы говорите по-английски?"},{"id":127,"pt":"Como se diz isto em português?","audio":"https://static.wixstatic.com/mp3/18fb24_b38840fc959d474781aeaeb197b269ef.mp3","category":"общее","ru":"как это сказать по-португальски?"},{"id":128,"pt":"Conheces o João?","audio":"https://static.wixstatic.com/mp3/18fb24_9f3f36ab4a2848d49ef8c04e6f140303.mp3","category":"общее","ru":"Ты знаком с Жуау?"},{"id":129,"pt":"Muito prazer!","audio":"https://static.wixstatic.com/mp3/18fb24_1b9382421d6a405e933b1caee8675f79.mp3","category":"общее","ru":"очень приятно! (при знакомстве)"},{"id":130,"pt":"Tem multibanco? / Posso pagar com cartão?","audio":"https://static.wixstatic.com/mp3/18fb24_40f77a169a394efda4c8ab2656667057.mp3","category":"общее","ru":"у вас есть безналичный расчёт?"},{"id":131,"pt":"Desculpe, o multibanco / a casa de banho está fora de serviço","audio":"https://static.wixstatic.com/mp3/18fb24_fb362df38cf64fa3b93275506824f438.mp3","category":"общее","ru":"извините, безнал/туалет не работает"},{"id":132,"pt":"Desculpe pelo incómodo","audio":"https://static.wixstatic.com/mp3/18fb24_bb8c1cb8805548baaec910de0b80d634.mp3","category":"общее","ru":"извините за беспокойство"},{"id":133,"pt":"Não se preocupe / Não te preocupes","audio":"https://static.wixstatic.com/mp3/18fb24_c0e528c1d2fb44bdb69f4f0d3f9f9dd3.mp3","category":"общее","ru":"Не переживайте / Не переживай"},{"id":134,"pt":"Eu queria...","audio":"https://static.wixstatic.com/mp3/18fb24_7da12d97923e499fb1d8dc24dae90859.mp3","category":"общее","ru":"я бы хотел(а)"},{"id":135,"pt":"Desculpe, foi sem querer","audio":"https://static.wixstatic.com/mp3/18fb24_8246bdfb4fc34c91bfbe069fee4677c2.mp3","category":"общее","ru":"извините, я случайно"},{"id":136,"pt":"O que é que se passa?","audio":"https://static.wixstatic.com/mp3/18fb24_665788668455430da0c3cabf1d836221.mp3","category":"общее","ru":"что происходит?"},{"id":137,"pt":"Não faz mal / não tem problema","audio":"https://static.wixstatic.com/mp3/18fb24_4c117b3680894af9a9794222a8dceb70.mp3","category":"общее","ru":"Ничего страшного / без проблем"},{"id":138,"pt":"Hoje está calor/está frio","audio":"https://static.wixstatic.com/mp3/18fb24_098e2b98ed0a4e6ab089029bde055cd0.mp3","category":"общее","ru":"сегодня очень жарко/холодно"},{"id":139,"pt":"Estás confortável?","audio":"https://static.wixstatic.com/mp3/18fb24_d716fdbcd29a41dc94433e3589804d06.mp3","category":"общее","ru":"тебе удобно?"},{"id":140,"pt":"Então, volto mais tarde","audio":"https://static.wixstatic.com/mp3/18fb24_41477c7f4ef44290a2a8a82a8944f4d0.mp3","category":"общее","ru":"Ну тогда я вернусь позже"},{"id":141,"pt":"Não me importo","audio":"https://static.wixstatic.com/mp3/18fb24_159fecbbd8d644e1a008a4352516038d.mp3","category":"общее","ru":"я не возражаю / Я не против"},{"id":142,"pt":"Obrigado(a) pela sua ajuda / agradeço a sua ajuda","audio":"https://static.wixstatic.com/mp3/18fb24_4941b7668f174736a0703636358e327b.mp3","category":"общее","ru":"спасибо за вашу помощь / благодарю за вашу помощь"},{"id":143,"pt":"Tenho a certeza","audio":"https://static.wixstatic.com/mp3/18fb24_458041e1b45e43b595c16410bccef2e2.mp3","category":"общее","ru":"я уверен(а)"},{"id":144,"pt":"Espere, por favor","audio":"https://static.wixstatic.com/mp3/18fb24_9b5dbe2b2602482493a03f5ebae87a99.mp3","category":"общее","ru":"подождите, пожалуйста"},{"id":145,"pt":"Onde fica a casa de banho?","audio":"https://static.wixstatic.com/mp3/18fb24_ee34078657f54832a1e5cbef6e9a90c9.mp3","category":"общее","ru":"где находится уборная?"},{"id":146,"pt":"Que horas são?","audio":"https://static.wixstatic.com/mp3/18fb24_6e3ef33d7e2e4da7981bbe704d7b8986.mp3","category":"общее","ru":"который час?"},{"id":147,"pt":"O que é isto / isso?","audio":"https://static.wixstatic.com/mp3/18fb24_06ee3b92bef84e379280ff321e35ee31.mp3","category":"общее","ru":"Что это?"},{"id":148,"pt":"Desculpe, você trabalha aqui? O senhor / a senhora trabalha aqui?","audio":"https://static.wixstatic.com/mp3/18fb24_831228be0065425aa03ad097d22c3c63.mp3","category":"общее","ru":"извините, вы здесь работаете?"},{"id":149,"pt":"É muito simpático!","audio":"https://static.wixstatic.com/mp3/18fb24_38c44d2eb276411ca1af17f129b43a70.mp3","category":"общее","ru":"Вы очень добры!"},{"id":150,"pt":"Posso tirar uma foto?","audio":"https://static.wixstatic.com/mp3/18fb24_d482b2770bfb4a93bcb2baac0b805b87.mp3","category":"общее","ru":"могу я сфотографировать?"},{"id":151,"pt":"Mostra-me como é","audio":"https://static.wixstatic.com/mp3/18fb24_92ba3d2359ff4eccab583c5ac917dbab.mp3","category":"общее","ru":"покажи мне, как выглядит"},{"id":152,"pt":"Não tenho dinheiro comigo","audio":"https://static.wixstatic.com/mp3/18fb24_a6003448b7b7438a8042ecad33c799a9.mp3","category":"общее","ru":"у меня нет с собой денег"},{"id":153,"pt":"Sabe quem é o dono deste cão?","audio":"https://static.wixstatic.com/mp3/18fb24_7e92d8202da34e9cbf411a3650858221.mp3","category":"общее","ru":"вы знаете, кто хозяин этой собаки?"},{"id":154,"pt":"Pode fechar a porta/janela se faz favor?","audio":"https://static.wixstatic.com/mp3/18fb24_9bea8c8c137442ffa1ac53cac6ccd546.mp3","category":"общее","ru":"закройте дверь/окно, пожалуйста"},{"id":155,"pt":"Precisa de ajuda?","audio":"https://static.wixstatic.com/mp3/18fb24_a9c6adc05284485f84422e4ce9c4dd53.mp3","category":"общее","ru":"вам нужна помощь?"},{"id":156,"pt":"Não sei","audio":"https://static.wixstatic.com/mp3/18fb24_cd166d345bf94a7d9a71d0e6502305a1.mp3","category":"общее","ru":"я не знаю"},{"id":157,"pt":"Tenho de ir","audio":"https://static.wixstatic.com/mp3/18fb24_310f3ea62b7c43908f5d211cc3bb6eae.mp3","category":"общее","ru":"мне нужно идти"},{"id":158,"pt":"Não posso fazer nada","audio":"https://static.wixstatic.com/mp3/18fb24_e408a6bccb5e4c5a8f41c25f59ac427e.mp3","category":"общее","ru":"я ничего не могу сделать"},{"id":159,"pt":"O que eu posso fazer? Como posso ajudar?","audio":"https://static.wixstatic.com/mp3/18fb24_c16f2c0cfc114ccaa2b7e6b6f27c2537.mp3","category":"общее","ru":"что я могу сделать? Как я могу помочь?"},{"id":160,"pt":"Obrigado(a). De nada","audio":"https://static.wixstatic.com/mp3/18fb24_e107e48495ed443ca39180bceb22b8cc.mp3","category":"общее","ru":"Спасибо! Не за что"},{"id":161,"pt":"Posso entrar?","audio":"https://static.wixstatic.com/mp3/18fb24_5d68937144f644139be1ba030d7914d2.mp3","category":"общее","ru":"Могу я войти?"},{"id":162,"pt":"Não trabalhamos por causa da greve / por causa do feriado","audio":"https://static.wixstatic.com/mp3/18fb24_b48fd12aa76340dd905821a79ce9092c.mp3","category":"общее","ru":"Не работаем из-за забастовки / из-за праздничного дня"},{"id":163,"pt":"Sinto muito / Lamento / Os meus sentimentos","audio":"https://static.wixstatic.com/mp3/18fb24_aba3e321486e46268c0c2fdc4e4f4541.mp3","category":"общее","ru":"Мне очень жаль / Сожалею / Мои соболезнования"},{"id":164,"pt":"Pois, faz sentido","audio":"https://static.wixstatic.com/mp3/18fb24_c1fce221c9834910bf861e57653f6c85.mp3","category":"общее","ru":"Ну да, в этом есть смысл"},{"id":165,"pt":"Estou muito embaraçado(a)","audio":"https://static.wixstatic.com/mp3/18fb24_f7239170ab52443c94a0936c36ad2a9d.mp3","category":"общее","ru":"Мне очень неловко."},{"id":166,"pt":"Não estou a perceber / Não percebo","audio":"https://static.wixstatic.com/mp3/18fb24_f9c4b5c2e75f4ac1bd6866b94d32d691.mp3","category":"общее","ru":"Я не понимаю"},{"id":167,"pt":"Esta água é potável?","audio":"https://static.wixstatic.com/mp3/18fb24_cea94df2be964c478058828619520bd1.mp3","category":"общее","ru":"Это питьевая вода?"},{"id":168,"pt":"O que vais fazer hoje? Quais são os teus planos?","audio":"https://static.wixstatic.com/mp3/18fb24_e1e270aa95a8416d88d1cc46563ea9a6.mp3","category":"общее","ru":"Что ты сегодня собираешься делать? Какие у тебя планы?"},{"id":169,"pt":"Tenho de esperar quanto tempo?","audio":"https://static.wixstatic.com/mp3/18fb24_3347ab7d4aee4e279cbd8441861b8129.mp3","category":"общее","ru":"Как долго мне придется ждать?"},{"id":170,"pt":"Tudo bem, não tenho pressa","audio":"https://static.wixstatic.com/mp3/18fb24_7ea63e48b28f49008d65d480cc020a82.mp3","category":"общее","ru":"Всё хорошо, я не спешу"},{"id":171,"pt":"A entrada é gratuita às segundas-feiras","audio":"https://static.wixstatic.com/mp3/18fb24_833350a42cfb4072bb0aa44b4d00382d.mp3","category":"общее","ru":"Вход по понедельникам бесплатный"},{"id":172,"pt":"Trabalha às quartas-feiras? Está aberto às quartas?","audio":"https://static.wixstatic.com/mp3/18fb24_526c8d1386c641aab7ff658d5180082c.mp3","category":"общее","ru":"Вы работаете по средам? / Вы открыты по средам?"},{"id":173,"pt":"Eles não trabalham aos sábados e domingos","audio":"https://static.wixstatic.com/mp3/18fb24_f51963d3fda94fa0a5052473ea9f9008.mp3","category":"общее","ru":"Они не работают по субботам и воскресеньям"},{"id":174,"pt":"Desculpe pelo atraso","audio":"https://static.wixstatic.com/mp3/18fb24_a8c848b882664ac592c426374f6e2c87.mp3","category":"общее","ru":"Извините за опоздание"},{"id":175,"pt":"Saúde! Santinho! Santinha!","audio":"https://static.wixstatic.com/mp3/18fb24_a54d70133a9f40c6aeee38424301b846.mp3","category":"общее","ru":"Будьте здоровы!"},{"id":176,"pt":"Posso fumar aqui? Pode trazer um cinzeiro?","audio":"https://static.wixstatic.com/mp3/18fb24_c7d678000a66442c8d9d458cddb09000.mp3","category":"общее","ru":"Здесь можно курить? Можете принести пепельницу?"},{"id":177,"pt":"O meu carro avariou / O teu computador avariou","audio":"https://static.wixstatic.com/mp3/18fb24_30a8bc6055f4406c9e2beeec281e4e20.mp3","category":"общее","ru":"Моя машина сломалась / Твой компьютер сломался"},{"id":178,"pt":"Vai subir ou descer?","audio":"https://static.wixstatic.com/mp3/18fb24_338e6b67f8264401bc450f4493332364.mp3","category":"общее","ru":"Вы едете вверх или вниз? (вместо \"на какой этаж\")"},{"id":179,"pt":"Desculpe, tem carregador de telemóvel?","audio":"https://static.wixstatic.com/mp3/18fb24_d0defe1a0082480882725103694e1ae9.mp3","category":"общее","ru":"Извините, у вас есть зарядка для телефона?"},{"id":180,"pt":"Quem é que está a seguir?","audio":"https://static.wixstatic.com/mp3/18fb24_a9f15f4c4fff448c82fdfe4dd5f16b45.mp3","category":"общее","ru":"Кто следующий?"},{"id":181,"pt":"A entrada é interdita / proibida","audio":"https://static.wixstatic.com/mp3/18fb24_7e477ef3e2064fd0a89eda04a9759507.mp3","category":"общее","ru":"Вход/въезд запрещен"},{"id":182,"pt":"um bilhete para... se faz favor","audio":"https://static.wixstatic.com/mp3/18fb24_3f2dd0bbd71a4c0e8b1cd58f9d32b79a.mp3","category":"транспорт","ru":"Билет до... пожалуйста."},{"id":183,"pt":"um bilhete de ida e volta","audio":"https://static.wixstatic.com/mp3/18fb24_658b500e49a745fb8fefe3cdb27eb4e0.mp3","category":"транспорт","ru":"билет туда и обратно"},{"id":184,"pt":"Há algum desconto para crianças / reformados?","audio":"https://static.wixstatic.com/mp3/18fb24_d89a2725a2b4465283270df5c57bf2d3.mp3","category":"транспорт","ru":"Есть ли скидка для детей/пенсионеров?"},{"id":185,"pt":"De que plataforma parte o autocarro / a camioneta?","audio":"https://static.wixstatic.com/mp3/18fb24_fa2da20e52694b0cacaa9137e650cdec.mp3","category":"транспорт","ru":"С какой платформы отправляется  городской /\nмеждугородний автобус?"},{"id":186,"pt":"Desculpe, acho que este lugar é meu","audio":"https://static.wixstatic.com/mp3/18fb24_5765b6f1c47c4b3d9cf79c2eced22d7f.mp3","category":"транспорт","ru":"Извините, я думаю, что это моё место"},{"id":187,"pt":"Quero fazer / carregar um passe mensal","audio":"https://static.wixstatic.com/mp3/18fb24_8fa68e6a209b42f595b8c0cdbf976ca9.mp3","category":"транспорт","ru":"Я хочу сделать / пополнить проездной на месяц"},{"id":188,"pt":"Pode puxar o banco mais para a frente?","audio":"https://static.wixstatic.com/mp3/18fb24_37222b55b89341779a5b199b15d8f3f4.mp3","category":"транспорт","ru":"(Машина) можете сдвинуть сиденье вперед?"},{"id":189,"pt":"Podia levar-me para esta morada, se faz favor?","audio":"https://static.wixstatic.com/mp3/18fb24_9495cc81ee944bc7bec6bd98573545f1.mp3","category":"транспорт","ru":"Отвезите меня по этому адресу пожалуйста"},{"id":190,"pt":"Vire à direita","audio":"https://static.wixstatic.com/mp3/18fb24_eff6787546b04d65a55f2bf0d356496e.mp3","category":"транспорт","ru":"Поверните направо"},{"id":191,"pt":"Vire à esquerda","audio":"https://static.wixstatic.com/mp3/18fb24_8b698018b15041f4a96a93e9cbb01ea4.mp3","category":"транспорт","ru":"Поверните налево"},{"id":192,"pt":"Pode seguir o GPS","audio":"https://static.wixstatic.com/mp3/18fb24_37fa764a338d499abe0ff0d046ba4cc6.mp3","category":"транспорт","ru":"Вы можете следовать по GPS"},{"id":193,"pt":"Siga em frente.","audio":"https://static.wixstatic.com/mp3/18fb24_0ebbced98a9047c5899bd798d55c8ff5.mp3","category":"транспорт","ru":"Езжайте прямо"},{"id":194,"pt":"Pode baixar um pouco a música?","audio":"https://static.wixstatic.com/mp3/18fb24_e1eefeade3b342e282f701dfb44ce850.mp3","category":"транспорт","ru":"Можете сделать музыку потише?"},{"id":195,"pt":"Pode parar aqui?","audio":"https://static.wixstatic.com/mp3/18fb24_738a665407e24ff78b20a2d84c807fb9.mp3","category":"транспорт","ru":"Вы можете здесь остановиться?"},{"id":196,"pt":"Bomba 5 (cinco), 10 (dez) litros de gasolina simples, 95 (noventa e cinco)","audio":"https://static.wixstatic.com/mp3/18fb24_9ea43dee7296491b9dc1f3862730bde2.mp3","category":"транспорт","ru":"5 колонка, 10 литров 95 бензина."},{"id":197,"pt":"Bomba 3 (três), vinte euros de gasóleo","audio":"https://static.wixstatic.com/mp3/18fb24_01b242bc4509417489c2f9033e36bd50.mp3","category":"транспорт","ru":"3 колонка, дизель на 20 евро"},{"id":198,"pt":"Queria encher o depósito","audio":"https://static.wixstatic.com/mp3/18fb24_e729c6924f9a468fa1ad052a30dce53e.mp3","category":"транспорт","ru":"Я бы хотела заправить полный бак"},{"id":199,"pt":"Este estacionamento é pago? É gratuito?","audio":"https://static.wixstatic.com/mp3/18fb24_12df7c28b6e34d84a61fee04f874551f.mp3","category":"транспорт","ru":"эта парковка платная? бесплатная?"},{"id":200,"pt":"onde posso pagar o estacionamento?","audio":"https://static.wixstatic.com/mp3/18fb24_ee5a6d49f1ff42e0a40c6a7cba5e86cc.mp3","category":"транспорт","ru":"где я могу оплатить парковку?"}];
+
+const CAT_CONFIG = {
+  'все':                        { color: '#1E3A5F', light: '#EEF2F8', icon: '🗂️',  label: 'Все категории' },
+  'в кафе':                     { color: '#F5963A', light: '#FEF3E8', icon: '☕',   label: 'В кафе' },
+  'в магазине':                  { color: '#C4286C', light: '#FCE8F2', icon: '🏪',  label: 'В магазине' },
+  'на улице':                   { color: '#2B58B5', light: '#E8EEF9', icon: '🏙️',  label: 'На улице' },
+  'общее':                      { color: '#5BC4ED', light: '#E8F7FD', icon: '💬',  label: 'Общее' },
+  'транспорт':                  { color: '#555868', light: '#EEEFF2', icon: '🚌',  label: 'Транспорт' },
+  'медицина':                   { color: '#E84855', light: '#FDE9EA', icon: '🩺',  label: 'Медицина' },
+  'документы':                  { color: '#4ECDC4', light: '#E8FAF9', icon: '📄',  label: 'Документы' },
+  'о себе':                     { color: '#72C040', light: '#EFF9E8', icon: '👤',  label: 'О себе' },
+  'Приветствие и прощание':     { color: '#8850B8', light: '#F2EAFB', icon: '👋',  label: 'Приветствие и прощание' },
+  'По телефону':                { color: '#F5D535', light: '#FEFBE8', icon: '📞',  label: 'По телефону' },
+};
+
+const CAT_ORDER = ['все','в кафе','в магазине','на улице','общее','транспорт','медицина','документы','о себе','Приветствие и прощание','По телефону'];
+
+let selectedCat = 'все';
+let flipped = new Set();
+let playingId = null;
+let currentAudio = null;
+let autoPlaying = false;
+let autoQueue = [];
+let autoIndex = 0;
+
+function getCfg(cat) { return CAT_CONFIG[cat] || { color:'#888', light:'#f5f5f5', icon:'•', label: cat }; }
+function filteredCards() { return selectedCat === 'все' ? CARDS : CARDS.filter(c => c.category === selectedCat); }
+
+// ── Dropdown ──
+function buildDropdown() {
+  const el = document.getElementById('dropdown');
+  el.innerHTML = CAT_ORDER.map(cat => {
+    const cfg = getCfg(cat);
+    const count = cat === 'все' ? CARDS.length : CARDS.filter(c => c.category === cat).length;
+    return `<div class="dropdown-item ${cat===selectedCat?'active':''}" onclick="selectCat('${esc(cat)}')">
+      <span class="dot" style="background:${cfg.color}"></span>
+      <span>${cfg.icon} ${cfg.label}</span>
+      <span class="count">${count}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleDropdown() {
+  document.getElementById('dropdown').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+function closeDropdown() {
+  document.getElementById('dropdown').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+function selectCat(cat) {
+  stopPlayAll();
+  selectedCat = cat;
+  const cfg = getCfg(cat);
+  document.getElementById('triggerDot').style.background = cat === 'все' ? 'white' : cfg.color;
+  document.getElementById('triggerLabel').textContent = cfg.label;
+  closeDropdown();
+  buildDropdown();
+  renderCards();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── Cards ──
+function renderCards() {
+  const cards = filteredCards();
+  const grid = document.getElementById('grid');
+  grid.innerHTML = cards.map(card => {
+    const cfg = getCfg(card.category);
+    const isPlaying = playingId === card.id;
+    return `<div class="card ${isPlaying?'playing':''}" id="card-${card.id}"
+        style="border-left-color:${cfg.color}; --cat-color:${cfg.color}; --cat-light:${cfg.light}">
+      <div class="card-top">
+        <span class="card-num">#${card.id}</span>
+        <span class="cat-icon">${cfg.icon}</span>
+      </div>
+      <div class="card-pt">${escHtml(card.pt)}</div>
+      <div class="card-ru ${flipped.has(card.id)?'visible':''}" id="ru-${card.id}">${escHtml(card.ru)}</div>
+      <div class="card-actions">
+        <button class="btn-play" onclick="playCard(${card.id})">
+          ${isPlaying ? '<span class="playing-dot"></span>' : '▶'}
+        </button>
+        <button class="btn-flip ${flipped.has(card.id)?'active':''}" onclick="flipCard(${card.id})">
+          ${flipped.has(card.id) ? '🙈 Скрыть' : '📖 Перевод'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s) { return s.replace(/'/g,"\'"); }
+
+// ── Audio ──
+function playCard(id) {
+  const card = CARDS.find(c => c.id === id);
+  if (!card) return;
+  if (playingId === id && currentAudio && !currentAudio.paused) {
+    currentAudio.pause(); playingId = null; renderCards(); return;
+  }
+  if (currentAudio) { currentAudio.pause(); currentAudio.onended = null; }
+  playingId = id; renderCards();
+  currentAudio = new Audio(card.audio);
+  currentAudio.play().catch(()=>{});
+  currentAudio.onended = () => {
+    if (autoPlaying) setTimeout(autoAdvance, 700);
+    else { playingId = null; renderCards(); }
+  };
+  currentAudio.onerror = () => {
+    playingId = null;
+    if (autoPlaying) setTimeout(autoAdvance, 400);
+    else renderCards();
+  };
+  setTimeout(() => {
+    const el = document.getElementById('card-'+id);
+    if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 80);
+}
+
+function flipCard(id) {
+  flipped.has(id) ? flipped.delete(id) : flipped.add(id);
+  const ru = document.getElementById('ru-'+id);
+  const btn = document.querySelector('#card-'+id+' .btn-flip');
+  if (ru) ru.classList.toggle('visible', flipped.has(id));
+  if (btn) { btn.classList.toggle('active', flipped.has(id)); btn.textContent = flipped.has(id) ? '🙈 Скрыть' : '📖 Перевод'; }
+}
+
+// ── Autoplay ──
+function togglePlayAll() { autoPlaying ? stopPlayAll() : startPlayAll(); }
+function startPlayAll() {
+  autoQueue = filteredCards().map(c => c.id);
+  autoIndex = 0; autoPlaying = true;
+  updatePlayAllBtn(); updateApBar();
+  if (autoQueue.length) playCard(autoQueue[0]);
+}
+function autoAdvance() {
+  autoIndex++;
+  if (autoIndex >= autoQueue.length) { stopPlayAll(); return; }
+  updateApBar(); playCard(autoQueue[autoIndex]);
+}
+function stopPlayAll() {
+  autoPlaying = false;
+  if (currentAudio) { currentAudio.pause(); currentAudio.onended = null; }
+  playingId = null; updatePlayAllBtn(); updateApBar(); renderCards();
+}
+function updatePlayAllBtn() {
+  const btn = document.getElementById('playAllBtn');
+  btn.classList.toggle('stop', autoPlaying);
+  document.getElementById('playAllIcon').textContent = autoPlaying ? '■' : '▶';
+  document.getElementById('playAllText').textContent = autoPlaying ? 'Остановить' : 'Слушать все';
+}
+function updateApBar() {
+  const bar = document.getElementById('autoplayBar');
+  bar.classList.toggle('visible', autoPlaying);
+  if (autoPlaying) {
+    document.getElementById('apLabel').textContent = (autoIndex+1)+' / '+autoQueue.length;
+    document.getElementById('apFill').style.width = (((autoIndex+1)/autoQueue.length)*100)+'%';
+    const cfg = getCfg(selectedCat);
+    document.getElementById('apFill').style.background = cfg.color;
+  }
+}
+
+// ── Access gate ──
+const _k = atob('c2ltc2lt');
+const _s = '_cp';
+
+function checkPassword() {
+  const val = document.getElementById('pwInput').value;
+  if (val === _k) {
+    localStorage.setItem(_s, '1');
+    document.getElementById('gate').classList.add('hidden');
+  } else {
+    const input = document.getElementById('pwInput');
+    const err = document.getElementById('gateError');
+    input.classList.add('error');
+    err.textContent = 'Неверный пароль. Попробуйте ещё раз.';
+    setTimeout(() => input.classList.remove('error'), 400);
+  }
+}
+
+if (localStorage.getItem(_s) === '1') {
+  document.getElementById('gate').classList.add('hidden');
+}
+
+// ── Init ──
+buildDropdown();
+renderCards();
+</script>
+</body>
+</html>
